@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CaslModule } from './modules/casl/casl.module';
 import { EnvConfig } from './config.type';
 import { ProductsModule } from './modules/products/products.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -25,13 +26,14 @@ import { ProductsModule } from './modules/products/products.module';
         REFRESH_TOKEN_EXPIRATION: Joi.string().required(),
       }),
     }),
+
     MongooseModule.forRootAsync({
       inject: [ConfigService<EnvConfig>],
       useFactory: (configService: ConfigService<EnvConfig>) => ({
         uri: configService.get('DB_URL'),
       }),
     }),
-
+    ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
     CaslModule,
