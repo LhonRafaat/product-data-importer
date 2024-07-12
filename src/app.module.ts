@@ -9,6 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { CaslModule } from './modules/casl/casl.module';
 import { EnvConfig } from './config.type';
+import { ProductsModule } from './modules/products/products.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { EnvConfig } from './config.type';
     UsersModule,
     AuthModule,
     CaslModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
