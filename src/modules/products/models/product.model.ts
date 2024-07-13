@@ -33,6 +33,12 @@ export class TProduct {
   images: Image[];
 
   @ApiProperty()
+  isDeleted: boolean;
+
+  @ApiProperty()
+  deletedAt: Date;
+
+  @ApiProperty()
   createdAt: string;
 
   @ApiProperty()
