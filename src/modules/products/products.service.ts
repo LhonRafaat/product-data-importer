@@ -11,13 +11,16 @@ import { VendorsService } from '../vendors/vendors.service';
 import { TVendor } from '../vendors/models/vendor.model';
 import { TUser } from '../users/user.model';
 import { IQuery, IRequest, TResponse } from '../../common/helper/common-types';
+import { GPT4Client } from '../../common/gpt-client';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<TProduct>,
     private readonly vendorService: VendorsService,
+    private readonly GPTClient: GPT4Client,
   ) {}
+
   async create(batchSize = 100) {
     let vendor: TVendor;
     const products = await parseCsv();
@@ -40,6 +43,20 @@ export class ProductsService {
     }
 
     const productsData = await this.parseProducts(products, vendor);
+
+    let i = 0;
+
+    for await (const product of productsData) {
+      i++;
+      const newDescription = await this.GPTClient.enhanceDescription(
+        product.name,
+        product.description,
+      );
+
+      product.description = newDescription;
+
+      if (i === 9) break;
+    }
     // Batch insertion so we dont overload memory
     for (let i = 0; i < productsData.length; i += batchSize) {
       const batch = productsData.slice(i, i + batchSize);

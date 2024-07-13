@@ -40,6 +40,7 @@ import { Cron } from '@nestjs/schedule';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Post() // can also be initiated via post request to make the testing easier
   @Cron('0 10 * * *')
   create() {
     return this.productsService.create();
