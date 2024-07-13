@@ -184,6 +184,20 @@ export class ProductsService {
   async remove(id: string, permenant: boolean): Promise<{ message: string }> {
     await this.findOne(id);
 
+    // dummy order for testing purposes
+
+    const pendingOrder = {
+      status: 'pending', // pending case
+      buyer: 'buyerId',
+      products: [
+        {
+          id,
+          quantity: 10,
+          available: true,
+        },
+      ],
+    };
+
     if (permenant) await this.productModel.findByIdAndDelete(id);
     else {
       await this.productModel.findByIdAndUpdate(
@@ -198,6 +212,13 @@ export class ProductsService {
         },
       );
     }
+
+    // pending case
+
+    pendingOrder.products.find((el) => el.id === id).available = false;
+    // notify buyer
+    // expo.sendNotification(....)
+
     return { message: `product with id #${id} removed` };
   }
 }
