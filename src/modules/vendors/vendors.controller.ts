@@ -25,4 +25,22 @@ export class VendorsController {
   async create(@Body() createVendorDto: CreateVendorDto): Promise<TVendor> {
     return await this.vendorsService.create(createVendorDto);
   }
+
+  @Get('/manufacturer/:id')
+  @ApiOkResponse({
+    type: TVendor,
+  })
+  async findOneByManufacturerId(
+    @Param('manufacturerId') manufacturerId: string,
+  ): Promise<TVendor> {
+    return await this.vendorsService.findOneByManufacturerId(manufacturerId);
+  }
+
+  @Get(':id')
+  @ApiOkResponse({
+    type: TVendor,
+  })
+  async findOne(@Param('id') id: string): Promise<TVendor> {
+    return await this.vendorsService.findOne(id);
+  }
 }
