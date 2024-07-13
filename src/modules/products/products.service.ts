@@ -10,6 +10,7 @@ import { Model } from 'mongoose';
 import { VendorsService } from '../vendors/vendors.service';
 import { TVendor } from '../vendors/models/vendor.model';
 import { TUser } from '../users/user.model';
+import { IQuery, IRequest, TResponse } from '../../common/helper/common-types';
 
 @Injectable()
 export class ProductsService {
@@ -118,13 +119,27 @@ export class ProductsService {
     return productsData;
   }
 
-  async findAll() {
-    // for testing purposes
-    const products = await parseCsv();
+  async findAll(req: IRequest, query: IQuery): Promise<TResponse<TProduct>> {
+    const products = this.productModel
+      .find({
+        ...req.searchObj,
+        ...req.dateQr,
+      })
+      .sort({ [query.sort]: query.orderBy === 'desc' ? -1 : 1 });
 
-    return products[Object.keys(products)[0]];
+    const total = await products.clone().countDocuments();
+
+    products.limit(+query.limit).skip(req.skip);
+
+    const response: TResponse<TProduct> = {
+      result: await products.exec(),
+      count: total,
+      limit: +query.limit,
+      page: +query.page,
+    };
+
+    return response;
   }
-
   findOne(id: number) {
     return `This action returns a #${id} product`;
   }
