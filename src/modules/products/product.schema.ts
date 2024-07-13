@@ -43,14 +43,7 @@ export const Product = new Schema<TProduct>(
       },
     ],
     availability: { type: String },
-    images: [
-      {
-        fileName: { type: String },
-        cdnLink: { type: String },
-        i: { type: Number },
-        alt: { type: String },
-      },
-    ],
+
     isDeleted: {
       type: Boolean,
       default: false,

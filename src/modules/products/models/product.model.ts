@@ -1,6 +1,58 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 
+// using classes for types mostly so I can use decorators
+
+class Variant {
+  @ApiProperty()
+  id: string;
+  @ApiProperty()
+  itemId: string;
+  @ApiProperty()
+  available: boolean;
+  @ApiProperty()
+  cost: number;
+  @ApiProperty()
+  currency: string;
+  @ApiProperty()
+  manufacturerItemCode: string;
+  @ApiProperty()
+  description: string;
+  @ApiProperty()
+  packaging: string;
+  @ApiProperty()
+  sku: string;
+  @ApiProperty()
+  images: Image[];
+  @ApiProperty()
+  itemCode: string;
+}
+
+class Image {
+  @ApiProperty()
+  fileName: string;
+  @ApiProperty()
+  cdnLink: string;
+  @ApiProperty()
+  i: number;
+  @ApiProperty()
+  alt: string;
+}
+
+class Option {
+  @ApiProperty()
+  id: string;
+  @ApiProperty()
+  name: string;
+  @ApiProperty()
+  values: [
+    {
+      id: string;
+      value: string;
+    },
+  ];
+}
+
 export class TProduct {
   @ApiProperty()
   _id: string;
@@ -20,17 +72,14 @@ export class TProduct {
   @ApiProperty()
   storefrontPriceVisibility: string;
 
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ isArray: true, type: () => Variant })
   variants: Variant[];
 
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ isArray: true, type: () => Option })
   options: Option[];
 
   @ApiProperty()
   availability: string;
-
-  @ApiProperty({ isArray: true })
-  images: Image[];
 
   @ApiProperty()
   isDeleted: boolean;
@@ -49,38 +98,6 @@ export enum ProductOptions {
   packaging = 'packaging',
   description = 'description',
 }
-
-type Variant = {
-  id: string;
-  itemId: string;
-  available: boolean;
-  cost: number;
-  currency: string;
-  manufacturerItemCode: string;
-  description: string;
-  packaging: string;
-  sku: string;
-  images: Image[];
-  itemCode: string;
-};
-
-type Image = {
-  fileName: string;
-  cdnLink: string;
-  i: number;
-  alt: string;
-};
-
-type Option = {
-  id: string;
-  name: string;
-  values: [
-    {
-      id: string;
-      value: string;
-    },
-  ];
-};
 
 export enum Currencies {
   USD = 'USD',
