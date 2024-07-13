@@ -1,26 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { CreateVendorDto } from './dto/create-vendor.dto';
 import { UpdateVendorDto } from './dto/update-vendor.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { TVendor } from './models/vendor.model';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class VendorsService {
-  create(createVendorDto: CreateVendorDto) {
-    return 'This action adds a new vendor';
+  constructor(
+    @InjectModel('Vendor') private readonly vendorModel: Model<TVendor>,
+  ) {}
+  async create(createVendorDto: CreateVendorDto): Promise<TVendor> {
+    return await this.vendorModel.create(createVendorDto);
   }
 
-  findAll() {
-    return `This action returns all vendors`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} vendor`;
-  }
-
-  update(id: number, updateVendorDto: UpdateVendorDto) {
-    return `This action updates a #${id} vendor`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} vendor`;
+  findOneByManufacturerId(manufacturerId: string): Promise<TVendor> {
+    return this.vendorModel.findOne({ manufacturerId });
   }
 }
