@@ -1,6 +1,11 @@
 # Few notes
 
-- run `shell npm i ` with `shell --legacy-peer-deps ` to resolve the conflicts, would have taken sometime to find the conflicts so I left it as it is.
+- run npm i with --legacy-peer-deps to resolve the conflicts, would have taken sometime to find the conflicts so I left it as it is.
+
+```shell
+npm i --legacy-peer-deps
+
+```
 
 - add .env with the information in .env.example. We need the tokens because some routes as product CRUDs protected to simulate a real case senario.
 
@@ -20,4 +25,8 @@
 
 - the data is transformed to my desired format and then saved to mongodb via insertMany, it inserts the data in chuncks to reduce high memory usage.
 - then using gpt4 10 items descriptions are updated.
-- to delete a product permenatly send a `shell ?permenant=true ` query, else it will set isDeleted to true and record deletion date, also documented in swagger.
+- to delete a product permenatly send a ?permenant=true query, else it will set isDeleted to true and record deletion date, also documented in swagger.
+
+```shell
+?permenant=true
+```
