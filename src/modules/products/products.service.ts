@@ -181,9 +181,23 @@ export class ProductsService {
     });
   }
 
-  async remove(id: string): Promise<{ message: string }> {
+  async remove(id: string, permenant: boolean): Promise<{ message: string }> {
     await this.findOne(id);
-    await this.productModel.findByIdAndDelete(id);
+
+    if (permenant) await this.productModel.findByIdAndDelete(id);
+    else {
+      await this.productModel.findByIdAndUpdate(
+        id,
+        {
+          isDeleted: true,
+          deletedAt: new Date(),
+        },
+        {
+          new: true,
+          runValidators: true,
+        },
+      );
+    }
     return { message: `product with id #${id} removed` };
   }
 }

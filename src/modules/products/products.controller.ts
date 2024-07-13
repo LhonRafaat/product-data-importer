@@ -81,7 +81,10 @@ export class ProductsController {
   @Delete(':id')
   @UseGuards(AccessTokenGuard, AbilitiesGuard)
   @checkAbilities({ action: Action.Delete, subject: TProduct })
-  remove(@Param('id') id: string): Promise<{ message: string }> {
-    return this.productsService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @Query('permenant', { transform: Boolean }) permenant: boolean,
+  ): Promise<{ message: string }> {
+    return this.productsService.remove(id, permenant);
   }
 }
