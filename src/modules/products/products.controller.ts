@@ -31,6 +31,7 @@ import { QueryTypes } from '../../common/decorators/query.decorator';
 import { AccessTokenGuard } from '../../common/guards/jwt.guard';
 import { AbilitiesGuard } from '../../common/guards/abilities.guard';
 import { checkAbilities } from '../../common/decorators/abilities.decorator';
+import { Cron } from '@nestjs/schedule';
 
 @Controller('products')
 @ApiTags('Products')
@@ -39,14 +40,7 @@ import { checkAbilities } from '../../common/decorators/abilities.decorator';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Post()
-  @ApiOkResponse({
-    type: () => {
-      return {
-        message: 'ok',
-      };
-    },
-  })
+  @Cron('0 10 * * *')
   create() {
     return this.productsService.create();
   }
