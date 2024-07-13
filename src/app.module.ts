@@ -11,6 +11,7 @@ import { CaslModule } from './modules/casl/casl.module';
 import { EnvConfig } from './config.type';
 import { ProductsModule } from './modules/products/products.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { VendorsModule } from './modules/vendors/vendors.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AuthModule,
     CaslModule,
     ProductsModule,
+    VendorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
