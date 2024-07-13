@@ -24,5 +24,5 @@ export class RegisterPayload {
 
   @ApiProperty()
   @IsOptional()
-  isAdmin?: boolean;
+  isAdmin?: boolean; // added this to dto for testing purposes
 }
