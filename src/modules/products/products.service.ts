@@ -75,8 +75,10 @@ export class ProductsService {
       const prodcutVariants = products[key];
 
       return {
-        productId,
-        name: prodcutVariants[0].ProductName ?? 'not provided',
+        productId: [undefined, null, ''].includes(productId)
+          ? 'not-provided'
+          : productId, // some documents dont have a productId
+        name: prodcutVariants[0].ProductName ?? 'not-provided',
         availability: prodcutVariants[0].Availability,
         description: prodcutVariants[0].ProductDescription,
         vendorId: vendor._id,
@@ -84,8 +86,9 @@ export class ProductsService {
         variants: prodcutVariants.map((el: ProductCsv, i: number) => {
           return {
             id: nanoid(),
-            productId: key,
-            itemId: el.ItemID,
+            itemId: [undefined, null, ''].includes(el.ItemID)
+              ? 'not-provided'
+              : el.ItemID,
             available: +el.QuantityOnHand > 0, // qunatity bigger than 0 means its available
             cost: parseFloat(el.UnitPrice) || 0,
             currency: Currencies.USD,
@@ -142,7 +145,8 @@ export class ProductsService {
         ...req.searchObj,
         ...req.dateQr,
       })
-      .sort({ [query.sort]: query.orderBy === 'desc' ? -1 : 1 });
+      .sort({ [query.sort]: query.orderBy === 'desc' ? -1 : 1 })
+      .populate('vendorId');
 
     const total = await products.clone().countDocuments();
 
