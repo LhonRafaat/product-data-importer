@@ -18,3 +18,4 @@
 
 - the data is transformed to my desired format and then saved to mongodb via insertMany, it inserts the data in chuncks to reduce high memory usage.
 - then using gpt4 10 items descriptions are updated.
+- to delete a product permenatly send a ?permenant=true query, else it will set isDeleted to true and record deletion date, also documented in swagger.
