@@ -31,6 +31,7 @@ export class TProduct {
 
   @ApiProperty()
   createdAt: string;
+
   @ApiProperty()
   updatedAt: string;
 }

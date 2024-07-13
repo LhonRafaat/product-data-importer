@@ -4,17 +4,54 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { parseCsv } from '../../common/helper/parse-csv';
 import { ProductCsv } from './models/product.csv.model';
 import { nanoid } from 'nanoid';
-import { ProductOptions, TProduct } from './models/product.model';
+import { Currencies, ProductOptions, TProduct } from './models/product.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { VendorsService } from '../vendors/vendors.service';
+import { TVendor } from '../vendors/models/vendor.model';
+import { TUser } from '../users/user.model';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<TProduct>,
+    private readonly vendorService: VendorsService,
   ) {}
   async create(batchSize = 100) {
+    let vendor: TVendor;
     const products = await parseCsv();
+
+    // assuming all products in the csv have same vendor
+
+    const manufacturerId =
+      products[Object.keys(products)[0]][0]?.ManufacturerID;
+
+    const manufacturerName =
+      products[Object.keys(products)[0]][0]?.ManufacturerName;
+
+    vendor = await this.vendorService.findOneByManufacturerId(manufacturerId);
+
+    if (!vendor) {
+      vendor = await this.vendorService.create({
+        manufacturerId,
+        manufacturerName,
+      });
+    }
+
+    const productsData = await this.parseProducts(products, vendor);
+    // Batch insertion so we dont overload memory
+    for (let i = 0; i < productsData.length; i += batchSize) {
+      const batch = productsData.slice(i, i + batchSize);
+      await this.productModel.insertMany(batch);
+    }
+
+    return { msg: 'ok' };
+  }
+
+  async parseProducts(
+    products: ProductCsv,
+    vendor: TVendor,
+  ): Promise<Partial<TProduct>[]> {
     const productsData = Object.keys(products).map((key, index: number) => {
       const productId = key;
       const prodcutVariants = products[key];
@@ -23,22 +60,17 @@ export class ProductsService {
         productId,
         name: prodcutVariants[0].ProductName ?? 'not provided',
         availability: prodcutVariants[0].Availability,
-        shortDescription: prodcutVariants[0].ProductDescription,
-        isFragile: false,
-        published: 'published',
-        isTaxable: true,
-        vendorId: 'VfoeB-qlPBfT4NslMUR_V0zT',
-        manufacturerId: 'F9pUHdXiOpkY7qgohnGjxMv2',
-        storefrontPriceVisibility: 'members-only',
+        description: prodcutVariants[0].ProductDescription,
+        vendorId: vendor._id,
+        storefrontPriceVisibility: 'members-only', // not sure what values this take
         variants: prodcutVariants.map((el: ProductCsv, i: number) => {
           return {
             id: nanoid(),
             productId: key,
             itemId: el.ItemID,
             available: +el.QuantityOnHand > 0, // qunatity bigger than 0 means its available
-            cost: 0,
-            currency: 'USD',
-            depth: 0,
+            cost: parseFloat(el.UnitPrice) || 0,
+            currency: Currencies.USD,
             sku: el.ManufacturerItemCode + el.ItemID,
             packaging: el.PKG,
             images: [
@@ -50,19 +82,8 @@ export class ProductsService {
               },
             ],
             description: el.ItemDescription,
-            height: 0,
-            width: 0,
-            manufacturerItemCode: el.ManufacturerItemCode,
             manufacturerItemId: el.ManufacturerItemCode,
-            volume: 0,
-            volumeUom: '',
-            weight: 0,
-            weightUom: '',
-            optionName: '',
-            optionsPath: '',
-            optionItemsPath: '',
-            active: true,
-            itemCode: el.ManufacturerItemCode,
+            itemCode: el.ItemID,
           };
         }),
         options: [
@@ -94,16 +115,11 @@ export class ProductsService {
       };
     });
 
-    // Batch insertion so we dont overload memory
-    for (let i = 0; i < productsData.length; i += batchSize) {
-      const batch = productsData.slice(i, i + batchSize);
-      await this.productModel.insertMany(batch);
-    }
-
-    return { msg: 'ok' };
+    return productsData;
   }
 
   async findAll() {
+    // for testing purposes
     const products = await parseCsv();
 
     return products[Object.keys(products)[0]];

@@ -10,12 +10,21 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('products')
+@ApiTags('Products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @ApiOkResponse({
+    type: () => {
+      return {
+        msg: 'ok',
+      };
+    },
+  })
   create() {
     return this.productsService.create();
   }
