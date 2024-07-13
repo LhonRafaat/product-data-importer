@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { TUser } from '../../modules/users/user.model';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { InferSubjects } from '@casl/ability';
+import { TProduct } from '../../modules/products/models/product.model';
 
 export interface SearchObj {
   [key: string]:
@@ -81,7 +82,7 @@ export interface IQuery {
   end: string;
 }
 
-export type Subjects = InferSubjects<typeof TUser | 'all'>;
+export type Subjects = InferSubjects<typeof TUser | typeof TProduct | 'all'>;
 
 export enum Action {
   Manage = 'manage',
