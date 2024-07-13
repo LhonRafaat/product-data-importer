@@ -22,20 +22,16 @@ export class TProduct {
 
   @ApiProperty({ isArray: true })
   options: Option[];
-  availability: string;
-  isFragile: boolean;
-  published: string;
-  isTaxable: boolean;
-  images: [
-    {
-      fileName: string;
-      cdnLink: string;
-      i: number;
-      alt: string;
-    },
-  ];
 
+  @ApiProperty()
+  availability: string;
+
+  @ApiProperty({ isArray: true })
+  images: Image[];
+
+  @ApiProperty()
   createdAt: string;
+  @ApiProperty()
   updatedAt: string;
 }
 
@@ -49,22 +45,10 @@ type Variant = {
   available: boolean;
   cost: number;
   currency: string;
-  depth: number;
-  height: number;
-  width: number;
   manufacturerItemCode: string;
-  manufacturerItemId: string;
   description: string;
   packaging: string;
-  volume: number;
-  volumeUom: string;
-  weight: number;
-  weightUom: string;
-  optionName: string;
-  optionsPath: string;
-  optionItemsPath: string;
   sku: string;
-  active: boolean;
   images: Image[];
   itemCode: string;
 };
@@ -79,12 +63,14 @@ type Image = {
 type Option = {
   id: string;
   name: string;
-  dataField: string;
   values: [
     {
       id: string;
-      name: string;
       value: string;
     },
   ];
 };
+
+export enum Currencies {
+  USD = 'USD',
+}
