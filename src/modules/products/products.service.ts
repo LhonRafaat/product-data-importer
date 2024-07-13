@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { parseCsv } from '../../common/helper/parse-csv';
@@ -46,7 +46,7 @@ export class ProductsService {
       await this.productModel.insertMany(batch);
     }
 
-    return { msg: 'ok' };
+    return { message: 'ok' };
   }
 
   async parseProducts(
@@ -140,15 +140,29 @@ export class ProductsService {
 
     return response;
   }
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string): Promise<TProduct> {
+    const product = await this.productModel.findById(id);
+
+    if (!product) throw new NotFoundException('Product not found');
+
+    return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto,
+  ): Promise<TProduct> {
+    await this.findOne(id);
+
+    return await this.productModel.findByIdAndUpdate(id, updateProductDto, {
+      runValidators: true,
+      new: true,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string): Promise<{ message: string }> {
+    await this.findOne(id);
+    await this.productModel.findByIdAndDelete(id);
+    return { message: `product with id #${id} removed` };
   }
 }

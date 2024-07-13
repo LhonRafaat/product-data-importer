@@ -43,7 +43,7 @@ export class ProductsController {
   @ApiOkResponse({
     type: () => {
       return {
-        msg: 'ok',
+        message: 'ok',
       };
     },
   })
@@ -64,15 +64,29 @@ export class ProductsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {}
+  @ApiOkResponse({
+    type: TProduct,
+  })
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @checkAbilities({ action: Action.Read, subject: TProduct })
+  async findOne(@Param('id') id: string): Promise<TProduct> {
+    return await this.productsService.findOne(id);
+  }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(+id, updateProductDto);
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @checkAbilities({ action: Action.Update, subject: TProduct })
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ): Promise<TProduct> {
+    return this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+  @UseGuards(AccessTokenGuard, AbilitiesGuard)
+  @checkAbilities({ action: Action.Delete, subject: TProduct })
+  remove(@Param('id') id: string): Promise<{ message: string }> {
+    return this.productsService.remove(id);
   }
 }
