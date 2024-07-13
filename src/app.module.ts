@@ -25,6 +25,7 @@ import { VendorsModule } from './modules/vendors/vendors.module';
         REFRESH_SECRET: Joi.string().required(),
         ACCESS_TOKEN_EXPIRATION: Joi.string().required(),
         REFRESH_TOKEN_EXPIRATION: Joi.string().required(),
+        OPENAI_API_KEY: Joi.string().required(),
       }),
     }),
 

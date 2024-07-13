@@ -5,4 +5,5 @@ export type EnvConfig = {
   REFRESH_SECRET: string;
   ACCESS_TOKEN_EXPIRATION: string;
   REFRESH_TOKEN_EXPIRATION: string;
+  OPENAI_API_KEY: string;
 };
