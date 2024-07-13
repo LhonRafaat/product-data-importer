@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class TProduct {
+  _id: string;
   name: string;
   type: string;
   shortDescription: string;
@@ -67,4 +68,12 @@ export class TProduct {
       alt: string;
     },
   ];
+
+  createdAt: string;
+  updatedAt: string;
+}
+
+export enum ProductOptions {
+  packaging = 'packaging',
+  description = 'description',
 }
