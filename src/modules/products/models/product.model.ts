@@ -6,6 +6,9 @@ export class TProduct {
   _id: string;
 
   @ApiProperty()
+  productId: string;
+
+  @ApiProperty()
   name: string;
 
   @ApiProperty()
@@ -43,6 +46,7 @@ export enum ProductOptions {
 
 type Variant = {
   id: string;
+  itemId: string;
   available: boolean;
   cost: number;
   currency: string;

@@ -4,12 +4,14 @@ import { TProduct } from './models/product.model';
 export const Product = new Schema<TProduct>(
   {
     name: { type: String, required: true },
+    productId: { type: String, required: true },
     description: { type: String },
     vendorId: { type: Schema.Types.ObjectId, required: true, ref: 'Vendor' },
     storefrontPriceVisibility: { type: String },
     variants: [
       {
         id: { type: String, required: true },
+        itemId: { type: String, required: true },
         available: { type: Boolean, required: true },
         cost: { type: Number, required: true },
         currency: { type: String, required: true },
