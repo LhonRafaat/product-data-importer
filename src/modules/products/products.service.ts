@@ -44,25 +44,13 @@ export class ProductsService {
 
     const productsData = await this.parseProducts(products, vendor);
 
-    let i = 0;
-
-    for await (const product of productsData) {
-      i++;
-      const newDescription = await this.GPTClient.enhanceDescription(
-        product.name,
-        product.description,
-      );
-
-      product.description = newDescription;
-
-      if (i === 9) break;
-    }
     // Batch insertion so we dont overload memory
     for (let i = 0; i < productsData.length; i += batchSize) {
       const batch = productsData.slice(i, i + batchSize);
       await this.productModel.insertMany(batch);
     }
 
+    await this.enhanceProductsDescription();
     return { message: 'ok' };
   }
 
@@ -160,6 +148,19 @@ export class ProductsService {
     };
 
     return response;
+  }
+
+  async enhanceProductsDescription(): Promise<void> {
+    const products = await this.productModel.find().limit(10);
+
+    for await (const product of products) {
+      const newDescription = await this.GPTClient.enhanceDescription(
+        product.name,
+        product.description,
+      );
+
+      product.description = newDescription;
+    }
   }
   async findOne(id: string): Promise<TProduct> {
     const product = await this.productModel.findById(id);
